@@ -5,7 +5,11 @@ meta {
 }
 
 get {
-  url: {{host}}:{{port}}/api/file/download
+  url: {{host}}:{{port}}/api/file/download/13
   body: none
   auth: none
+}
+
+headers {
+  Authorization: Bearer {{token}}
 }

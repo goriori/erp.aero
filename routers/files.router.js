@@ -18,7 +18,7 @@ router.post(
   FileController.uploadFile,
 );
 
-router.post("/file/download/:id", authMiddleware, FileController.downloadFile);
+router.get("/file/download/:id", authMiddleware, FileController.downloadFile);
 
 router.put(
   "/file/update/:id",
