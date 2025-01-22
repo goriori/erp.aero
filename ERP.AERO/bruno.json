@@ -1,0 +1,6 @@
+{
+  "version": "1",
+  "name": "ERP.AERO",
+  "type": "collection",
+  "ignore": ["node_modules", ".git"]
+}

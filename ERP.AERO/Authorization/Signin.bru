@@ -1,0 +1,23 @@
+meta {
+  name: Signin
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host}}:{{port}}/api/signin
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+  "id":"79198334213",
+  "password":"123123"
+  }
+  
+}
+
+body:form-urlencoded {
+  id: awdwad
+}

@@ -1,0 +1,19 @@
+meta {
+  name: Upload File
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}:{{port}}/api/file/upload
+  body: multipartForm
+  auth: none
+}
+
+body:form-urlencoded {
+  : 
+}
+
+body:multipart-form {
+  file: @file(/home/goriori/Videos/preview_sound_mix.webm)
+}

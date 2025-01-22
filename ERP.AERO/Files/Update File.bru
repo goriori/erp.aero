@@ -1,0 +1,15 @@
+meta {
+  name: Update File
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{host}}:{{port}}/api/file/update/4
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  file: @file(/home/goriori/Downloads/photo_2024-12-12_12-45-17 (2) 1.png)
+}

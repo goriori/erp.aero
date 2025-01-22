@@ -1,0 +1,15 @@
+meta {
+  name: New Token
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{host}}:{{port}}/api/signin/new_token
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
