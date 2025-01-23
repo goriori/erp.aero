@@ -27,6 +27,11 @@ User.init(
       allowNull: false,
       defaultValue: false,
     },
+    userAgents: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: "[]",
+    },
   },
   {
     sequelize,

@@ -5,6 +5,8 @@ import { ERROR_CODES } from "../../configs/codes/error.config.js";
 import { SUCCESS } from "../../configs/messages/success.config.js";
 import { SUCCESS_CODES } from "../../configs/codes/success.config.js";
 import { Controller } from "../../entities/controller/index.js";
+import { createJSON, parseJSON } from "../../utils/json/index.js";
+import { checkDuplicateUserAgent } from "../../utils/auth/index.js";
 import { validationResult } from "express-validator";
 import {
   generateJwtToken,
@@ -42,6 +44,16 @@ class AuthController extends Controller {
       if (!validJwtToken(user.refreshToken)) {
         user.refreshToken = generateJwtToken({ id: user.id }, "10d");
       }
+      if (!user.userAgents) {
+        const userAgents = [];
+        userAgents.push(req.headers["user-agent"]);
+        user.userAgents = createJSON(userAgents);
+      } else {
+        const userAgents = parseJSON(parseJSON(user.userAgents));
+        if (!checkDuplicateUserAgent(req.headers["user-agent"], userAgents))
+          userAgents.push(req.headers["user-agent"]);
+        user.userAgents = createJSON(userAgents);
+      }
       user.isAuth = true;
       await user.save();
       if (!cookie)
@@ -49,7 +61,7 @@ class AuthController extends Controller {
       return res.json({
         data: {
           accessToken: generateJwtToken(
-            { id: user.id },
+            { id: user.id, userAgent: req.headers["user-agent"] },
             user.expiresIn || process.env.JWT_ACCESS_EXPIRED_TIME,
           ),
         },
@@ -147,9 +159,23 @@ class AuthController extends Controller {
 
   async logout(req, res) {
     const [type, token] = req.headers.authorization.split(" ");
-    const { id } = getJwtInfo(token);
+    const { id, userAgent } = getJwtInfo(token);
+    // Думаю на этом моменте стоит сбросить авторизацию для всех устройств, больше всего будет походить на попытку взлома или хака аккаунтаы
+    if (!userAgent)
+      return res
+        .status(ERROR_CODES.BAD_REQUEST)
+        .json({ error: ERRORS.BAD_REQUEST });
     const user = await UserModel.findOne({ where: { id } });
-    user.isAuth = false;
+    let userAgents = parseJSON(parseJSON(user.userAgents));
+    if (checkDuplicateUserAgent(userAgent, userAgents)) {
+      userAgents = userAgents.filter((agent) => agent !== userAgent);
+    }
+    if (!userAgents.length) {
+      user.isAuth = false;
+      user.userAgents = null;
+    } else {
+      user.userAgents = userAgents;
+    }
     user.refreshToken = null;
     await user.save();
     res.clearCookie("refreshToken");
@@ -159,6 +185,7 @@ class AuthController extends Controller {
       },
     });
   }
+
 }
 
 export default new AuthController();

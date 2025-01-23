@@ -10,7 +10,7 @@ import { generateJwtToken, validJwtToken } from "../../utils/jwt/index.js";
 import { getExtendFile, getFileName } from "../../utils/files/index.js";
 import FileModel from "../../db/models/files/index.js";
 
-const __dirname = path.resolve()
+const __dirname = path.resolve();
 
 class FileController extends Controller {
   constructor() {
@@ -62,11 +62,14 @@ class FileController extends Controller {
   }
 
   async downloadFile(req, res) {
-    const {id} = req.params
-    const file = await FileModel.findOne({where:{id}})
-    if(!file) return res.status(ERROR_CODES.NOT_FOUND).json({error:ERRORS.NOT_FOUND})
-    
-    return res.download(`${__dirname}/uploads/${file.fileName}`)
+    const { id } = req.params;
+    const file = await FileModel.findOne({ where: { id } });
+    if (!file)
+      return res
+        .status(ERROR_CODES.NOT_FOUND)
+        .json({ error: ERRORS.NOT_FOUND });
+
+    return res.download(`${__dirname}/uploads/${file.fileName}`);
   }
 
   async updateFile(req, res) {
